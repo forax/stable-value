@@ -1,2 +1,2 @@
-# stable_value
+# stable-value
 Stable value examples
