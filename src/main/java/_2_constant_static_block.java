@@ -1,11 +1,11 @@
 import module java.base;
 
-class _3_constant_static_block {
+class _2_constant_static_block {
   private static final int MAGIC;
   private static final String STRING;
 
   static {
-    MAGIC = 40 + 2;
+    MAGIC = 42;
     STRING = "Am i a constant ?";
   }
 
