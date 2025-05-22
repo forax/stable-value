@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-class _5_constant_static_block_list {
+class _13_constant_static_block_list {
   private static final List<String> LIST_OF;
   private static final List<String> ARRAYLIST;
 

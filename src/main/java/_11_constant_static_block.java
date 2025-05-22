@@ -1,6 +1,6 @@
 import module java.base;
 
-class _2_constant_static_block {
+class _11_constant_static_block {
   private static final int MAGIC;
   private static final String STRING;
 

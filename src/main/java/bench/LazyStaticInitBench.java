@@ -14,17 +14,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 // Benchmark                                     Mode  Cnt  Score   Error  Units
-// LazyStaticInitBench.lazy_class_string         avgt    5  0,312 ± 0,005  ns/op
-// LazyStaticInitBench.lazy_dcl_string           avgt    5  0,726 ± 0,009  ns/op
-// LazyStaticInitBench.lazy_synchronized_string  avgt    5  5,311 ± 0,042  ns/op
-// LazyStaticInitBench.stable_supplier_string    avgt    5  0,312 ± 0,001  ns/op
+// LazyStaticInitBench.lazy_class_string         avgt    5  0,312 ± 0,002  ns/op
+// LazyStaticInitBench.lazy_dcl_string           avgt    5  0,728 ± 0,004  ns/op
+// LazyStaticInitBench.lazy_synchronized_string  avgt    5  5,301 ± 0,022  ns/op
+// LazyStaticInitBench.stable_supplier_string    avgt    5  0,313 ± 0,001  ns/op
 // LazyStaticInitBench.stable_value_string       avgt    5  0,313 ± 0,001  ns/op
-// LazyStaticInitBench.string                    avgt    5  0,313 ± 0,002  ns/op
+// LazyStaticInitBench.string                    avgt    5  0,313 ± 0,001  ns/op
 
 // $JAVA_HOME/bin/java -jar target/benchmarks.jar -prof dtraceasm
 /*@Warmup(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
-@Fork(value = 1, jvmArgs = { "--enable-preview" })
+@Fork(
+    value = 1,
+    jvmArgs = {"--enable-preview"})
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)

@@ -14,8 +14,8 @@ import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 
-public final class StableValue {
-  private StableValue() {
+public final class RemiStableValue {
+  private RemiStableValue() {
     throw new AssertionError();
   }
 

@@ -16,21 +16,23 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-// Benchmark                                Mode  Cnt  Score   Error  Units
-// StableValueBench.stable_supplier_string  avgt    5  0,312 ± 0,002  ns/op
-// StableValueBench.stable_value_list       avgt    5  0,313 ± 0,001  ns/op
-// StableValueBench.stable_value_map        avgt    5  1,483 ± 0,012  ns/op
-// StableValueBench.stable_value_string     avgt    5  0,313 ± 0,001  ns/op
-// StableValueBench.string                  avgt    5  0,313 ± 0,001  ns/op
+// Benchmark                                        Mode  Cnt  Score   Error  Units
+// ConstantStableValueBench.stable_supplier_string  avgt    5  0,317 ± 0,007  ns/op
+// ConstantStableValueBench.stable_value_list       avgt    5  0,313 ± 0,001  ns/op
+// ConstantStableValueBench.stable_value_map        avgt    5  0,312 ± 0,001  ns/op
+// ConstantStableValueBench.stable_value_string     avgt    5  0,313 ± 0,001  ns/op
+// ConstantStableValueBench.string                  avgt    5  0,313 ± 0,001  ns/op
 
 // $JAVA_HOME/bin/java -jar target/benchmarks.jar -prof dtraceasm
 @Warmup(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
-@Fork(value = 1, jvmArgs = { "--enable-preview" })
+@Fork(
+    value = 1,
+    jvmArgs = {"--enable-preview"})
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
-public class StableValueBench {
+public class ConstantStableValueBench {
   private static final String STRING = "Am i a constant ?";
 
   public static final Supplier<String> STABLE_SUPPLIER = StableValue.supplier(() -> "Am i a constant ?");

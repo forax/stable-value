@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import stablevalue.RemiStableValue;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StableValueTest {
+public class RemiStableValueTest {
 
   @Nested
   public class SupplierTests {
@@ -27,7 +29,7 @@ public class StableValueTest {
     @Test
     public void supplierComputesValueOnlyOnce() {
       var counter = new AtomicInteger();
-      var stableSupplier = StableValue.supplier(counter::incrementAndGet);
+      var stableSupplier = RemiStableValue.supplier(counter::incrementAndGet);
 
       assertEquals(1, stableSupplier.get());
       assertEquals(1, stableSupplier.get());
@@ -38,7 +40,7 @@ public class StableValueTest {
     @Test
     public void supplierThrowsExceptionForCyclicDefinition() {
       var cyclicSupplier = new ArrayList<Supplier<Integer>>();
-      cyclicSupplier.add(StableValue.supplier(() -> cyclicSupplier.getFirst().get() + 1));
+      cyclicSupplier.add(RemiStableValue.supplier(() -> cyclicSupplier.getFirst().get() + 1));
 
       assertThrows(IllegalStateException.class, () -> cyclicSupplier.getFirst().get());
     }
@@ -46,7 +48,7 @@ public class StableValueTest {
     @Test
     public void supplierRelaysExceptions() {
       var expected = new RuntimeException("Expected exception");
-      var stableSupplier = StableValue.supplier(() -> {
+      var stableSupplier = RemiStableValue.supplier(() -> {
         throw expected;
       });
 
@@ -56,7 +58,7 @@ public class StableValueTest {
 
     @Test @Disabled
     public void supplierRejectsNullValues() {
-      var stableSupplier = StableValue.supplier(() -> null);
+      var stableSupplier = RemiStableValue.supplier(() -> null);
 
       assertThrows(NullPointerException.class, stableSupplier::get);
     }
@@ -68,7 +70,7 @@ public class StableValueTest {
       var startLatch = new CountDownLatch(1);
       var doneLatch = new CountDownLatch(threadCount);
 
-      var stableSupplier = StableValue.supplier(() -> {
+      var stableSupplier = RemiStableValue.supplier(() -> {
         try {
           Thread.sleep(100); // Simulate work
         } catch (InterruptedException e) {
@@ -115,7 +117,7 @@ public class StableValueTest {
     @Test
     public void listComputesValuesLazily() {
       var computationCount = new AtomicInteger();
-      var list = StableValue.list(10, index -> {
+      var list = RemiStableValue.list(10, index -> {
         computationCount.incrementAndGet();
         return index * 2;
       });
@@ -137,7 +139,7 @@ public class StableValueTest {
           .boxed()
           .collect(Collectors.toMap(i -> i, _ -> new AtomicInteger()));
 
-      var list = StableValue.list(5, index -> {
+      var list = RemiStableValue.list(5, index -> {
         computationCounts.get(index).incrementAndGet();
         return index * 3;
       });
@@ -157,12 +159,12 @@ public class StableValueTest {
 
     @Test
     public void listThrowsExceptionForNegativeSize() {
-      assertThrows(IllegalArgumentException.class, () -> StableValue.list(-1, i -> i));
+      assertThrows(IllegalArgumentException.class, () -> RemiStableValue.list(-1, i -> i));
     }
 
     @Test
     public void listThrowsExceptionForOutOfBounds() {
-      var list = StableValue.list(5, i -> i);
+      var list = RemiStableValue.list(5, i -> i);
 
       assertAll(
           () -> assertThrows(IndexOutOfBoundsException.class, () -> list.get(5)),
@@ -173,7 +175,7 @@ public class StableValueTest {
     @Test
     public void listThrowsExceptionForCyclicDefinition() {
       var cyclicList = new Object() {
-        final List<Integer> list = StableValue.list(5, i -> {
+        final List<Integer> list = RemiStableValue.list(5, i -> {
           if (i == 3) {
             return this.list.get(3) + 1; // Cyclic definition
           }
@@ -186,7 +188,7 @@ public class StableValueTest {
 
     @Test
     public void listSupportsConversionToArray() {
-      var list = StableValue.list(3, i -> "Item " + i);
+      var list = RemiStableValue.list(3, i -> "Item " + i);
 
       var array = list.toArray();
       var stringArray = list.toArray(new String[0]);
@@ -204,7 +206,7 @@ public class StableValueTest {
 
     @Test
     public void listIsUnmodifiable() {
-      var list = StableValue.list(5, i -> i);
+      var list = RemiStableValue.list(5, i -> i);
 
       assertAll(
           () -> assertThrows(UnsupportedOperationException.class, () -> list.add(5)),
@@ -225,7 +227,7 @@ public class StableValueTest {
       var startLatch = new CountDownLatch(1);
       var doneLatch = new CountDownLatch(threadCount);
 
-      var list = StableValue.list(size, index -> {
+      var list = RemiStableValue.list(size, index -> {
         try {
           Thread.sleep(100); // Simulate work
         } catch (InterruptedException e) {
@@ -271,7 +273,7 @@ public class StableValueTest {
       var keys = Set.of("apple", "banana", "cherry");
       var computationCount = new AtomicInteger();
 
-      var map = StableValue.map(keys, key -> {
+      var map = RemiStableValue.map(keys, key -> {
         computationCount.incrementAndGet();
         return key.length();
       });
@@ -295,7 +297,7 @@ public class StableValueTest {
       var computationCounts = keys.stream()
           .collect(Collectors.toMap(k -> k, _ -> new AtomicInteger()));
 
-      var map = StableValue.map(keys, key -> {
+      var map = RemiStableValue.map(keys, key -> {
         computationCounts.get(key).incrementAndGet();
         return key.hashCode();
       });
@@ -316,7 +318,7 @@ public class StableValueTest {
     public void mapThrowsExceptionForCyclicDefinition() {
       var keys = Set.of("a", "b", "c");
       var cyclicMap = new Object() {
-        final Map<String, Integer> map = StableValue.map(keys,key -> {
+        final Map<String, Integer> map = RemiStableValue.map(keys,key -> {
           if (key.equals("b")) {
             return this.map.get("b") + 1; // Cyclic definition
           }
@@ -330,7 +332,7 @@ public class StableValueTest {
     @Test
     public void mapContainsExpectedKeys() {
       var keys = Set.of("a", "b", "c");
-      var map = StableValue.map(keys, String::length);
+      var map = RemiStableValue.map(keys, String::length);
 
       assertAll(
           () -> assertTrue(map.containsKey("a")),
@@ -344,7 +346,7 @@ public class StableValueTest {
     @Test
     public void mapReturnsNullForNonExistentKeys() {
       var keys = Set.of("a", "b", "c");
-      var map = StableValue.map(keys, String::length);
+      var map = RemiStableValue.map(keys, String::length);
 
       assertNull(map.get("d"));
     }
@@ -352,7 +354,7 @@ public class StableValueTest {
     @Test
     public void mapViewsWorkCorrectly() {
       var keys = Set.of("a", "bb", "ccc");
-      var map = StableValue.map(keys, String::length);
+      var map = RemiStableValue.map(keys, String::length);
 
       assertAll(
           () -> assertEquals(Set.of(1, 2, 3), Set.copyOf(map.values())),
@@ -366,7 +368,7 @@ public class StableValueTest {
     @Test
     public void mapIsUnmodifiable() {
       var keys = Set.of("a", "b", "c");
-      var map = StableValue.map(keys, String::length);
+      var map = RemiStableValue.map(keys, String::length);
 
       assertAll(
           () -> assertThrows(UnsupportedOperationException.class, () -> map.put("d", 1)),
@@ -385,7 +387,7 @@ public class StableValueTest {
       var startLatch = new CountDownLatch(1);
       var doneLatch = new CountDownLatch(threadCount);
 
-      var map = StableValue.map(keys, key -> {
+      var map = RemiStableValue.map(keys, key -> {
         try {
           Thread.sleep(100); // Simulate work
         } catch (InterruptedException e) {
